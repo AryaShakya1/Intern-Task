@@ -1,4 +1,5 @@
 type LocationType = {
+  id: number;
   lat: number;
   lon: number;
   name: string;
@@ -16,6 +17,7 @@ type Condition = {
 };
 
 type WeatherType = {
+  id: number;
   location: LocationType;
   last_updated: Date;
   last_updated_epoch: number;
