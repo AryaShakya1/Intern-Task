@@ -5,7 +5,7 @@ from rest_framework import status
 from .helpers import logging
 
 
-@api_view(["GET"])
+@api_view(["POST"])
 def get_weather_data(request):
     try:
         if not request:
