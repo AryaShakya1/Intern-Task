@@ -80,8 +80,10 @@ function HomePage() {
             </div>
             {isConnected ? <></> : <ConnectionError />}
 
-            {isLoaded ? <button type="button" className='bg-gray-600 text-white rounded-full m-4 px-6 py-4' onClick={async () => await refresh_weather_data(location)}>Refresh</button> : <></>}
-            {isLoaded ? <WeatherCard weatherData={weatherData} /> : <></>}
+            {isLoaded ? <div className='flex flex-row'>
+                <WeatherCard weatherData={weatherData} />
+                <button type="button" className='bg-gray-200 text-slate-800 rounded-full m-4 px-6 max-h-12' onClick={async () => await refresh_weather_data(location)}>Refresh</button>
+            </div> : <></>}
             {errorMessage ? <p>{errorMessage}</p> : <></>}
         </div>
     )
