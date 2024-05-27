@@ -3,53 +3,48 @@ import WeatherCard from '../components/WeatherCard'
 
 function HomePage() {
     const [location, setLocation] = useState('')
-    const date = new Date("2024-05-27")
+    const [weatherData, setWeatherData] = useState({} as WeatherType)
+    const [isLoaded, setIsLoaded] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
+    const baseUrl = "http://127.0.0.1:8000/api/"
+
+    async function get_weather_data(location: string) {
+        try {
+            setErrorMessage('')
+            if (location.length == 0) {
+                setErrorMessage("Location cannot be Empty.")
+                return
+            }
+            const response = await fetch(baseUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ location: location })
+            })
+            if (response.ok) {
+                const data = await response.json()
+                setWeatherData(data)
+                setIsLoaded(true)
+            }
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+
     return (
         <div className='flex flex-col items-center justify-evenly p-4 bg-slate-300 min-h-screen'>
             <p className='text-black text-5xl font-extrabold'>Weather Data</p>
             <div className="flex flex-row justify-center min-w-full">
                 <input type="text" name="location" id="location" placeholder='Enter location...' className='m-4 py-4 px-8 bg-gray-200 rounded-full focus:outline-none w-96' value={location} onChange={(e) => setLocation(e.target.value)} />
-                <button type="button" className='bg-gray-600 text-white rounded-full m-4 px-6'>Search
+                <button type="button" className='bg-gray-600 text-white rounded-full m-4 px-6' onClick={async () => await get_weather_data(location)} >Search
                 </button>
 
             </div>
-            <WeatherCard weatherData={{
-                location: {
-                    lat: 0,
-                    lon: 0,
-                    name: 'Kathmandu',
-                    region: '',
-                    country: 'Nepal',
-                    tz_id: '',
-                    localtime_epoch: 0,
-                    localtime: ''
-                },
-                last_updated: date,
-                last_updated_epoch: 0,
-                temp_c: 0,
-                temp_f: 0,
-                feelslike_c: 0,
-                feelslike_f: 0,
-                condition: {
-                    text: 'Partly Cloudy',
-                    icon: '//cdn.weatherapi.com/weather/64x64/day/116.png',
-                    code: 1003
-                },
-                wind_mph: 0,
-                wind_kph: 0,
-                wind_degree: 0,
-                wind_dir: '',
-                pressure_mb: 0,
-                pressure_in: 0,
-                precip_mm: 0,
-                precip_in: 0,
-                humidity: 0,
-                cloud: 0,
-                is_day: 0,
-                uv: 0,
-                gust_mph: 0,
-                gust_kph: 0
-            }} />
+            {isLoaded ? <WeatherCard weatherData={weatherData} /> : <></>}
+            {errorMessage ? <p>{errorMessage}</p> : <></>}
         </div>
     )
 }
