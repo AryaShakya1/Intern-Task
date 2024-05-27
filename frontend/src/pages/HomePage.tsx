@@ -1,11 +1,13 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import WeatherCard from '../components/WeatherCard'
+import ConnectionError from '../components/ConnectionError'
 
 function HomePage() {
     const [location, setLocation] = useState('')
     const [weatherData, setWeatherData] = useState({} as WeatherType)
     const [isLoaded, setIsLoaded] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
+    const [isConnected, setIsConnected] = useState(true)
     const baseUrl = "http://127.0.0.1:8000/api/"
 
     async function get_weather_data(location: string) {
@@ -15,6 +17,10 @@ function HomePage() {
                 setErrorMessage("Location cannot be Empty.")
                 return
             }
+            if (!navigator.onLine) {
+                setIsConnected(false)
+            }
+            else { setIsConnected(true) }
             const response = await fetch(baseUrl, {
                 method: "POST",
                 headers: {
@@ -43,6 +49,9 @@ function HomePage() {
                 </button>
 
             </div>
+            {isConnected ? <></> : <ConnectionError />}
+
+            {isLoaded ? <button type="button" className='bg-gray-600 text-white rounded-full m-4 px-6 py-4' onClick={async () => await refresh_weather_data(location)}>Refresh</button> : <></>}
             {isLoaded ? <WeatherCard weatherData={weatherData} /> : <></>}
             {errorMessage ? <p>{errorMessage}</p> : <></>}
         </div>
