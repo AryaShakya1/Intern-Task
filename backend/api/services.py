@@ -14,7 +14,11 @@ def get_weather(location):
         locationObject = Location.objects.filter(name=location).first()
         if not locationObject:
             return fetch_weather(location=location)
-        weatherObject = RealTimeWeather.objects.filter(location=locationObject).first()
+        weatherObject = (
+            RealTimeWeather.objects.filter(location=locationObject)
+            .order_by("-last_updated")
+            .first()
+        )
         weather_serializer = RealTimeWeatherSerializer(weatherObject)
         return weather_serializer.data
 
