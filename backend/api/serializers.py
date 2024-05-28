@@ -2,6 +2,10 @@ from rest_framework import serializers
 from .models import Location, RealTimeWeather
 
 
+class RequestSerializer(serializers.Serializer):
+    location = serializers.CharField()
+
+
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
