@@ -1,10 +1,19 @@
+from .serializers import (
+    RealTimeWeatherSerializer,
+    RequestSerializer,
+)
 from .services import fetch_weather, get_weather
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .helpers import logging
+from drf_spectacular.utils import extend_schema
 
 
+@extend_schema(
+    request=RequestSerializer,
+    responses={200: RealTimeWeatherSerializer, 400: str},
+)
 @api_view(["POST"])
 def get_weather_data(request):
     try:
@@ -29,6 +38,10 @@ def get_weather_data(request):
         )
 
 
+@extend_schema(
+    request=RequestSerializer,
+    responses={200: RealTimeWeatherSerializer, 400: str},
+)
 @api_view(["POST"])
 def fetch_weather_data(request):
     try:
