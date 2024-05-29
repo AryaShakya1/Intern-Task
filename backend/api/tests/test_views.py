@@ -55,20 +55,28 @@ class GetWeatherViewTest(TestCase):
     def test_get_weather_view_with_correct_request(self):
         response = self.client.post("/api/", data={"location": "Kathmandu"})
         self.assertEqual(response.status_code, 200)
+        data = RealTimeWeatherSerializer(self.weather).data
+        self.assertEqual(response.json(), data)
 
     def test_get_weather_view_with_incorrect_request(self):
         response = self.client.post("/api/", data={"place": "Kathmandu"})
         self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), "Location was not provided")
 
     def test_get_weather_view_with_empty_request(self):
         response = self.client.post("/api/", data={"location": ""})
         self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.json(), "Error: Unable to get weather data")
 
     def test_get_weather_twice(self):
         response = self.client.post("/api/", data={"location": "Kathmandu"})
         self.assertEqual(response.status_code, 200)
+        data = RealTimeWeatherSerializer(self.weather).data
+        self.assertEqual(response.json(), data)
         response = self.client.post("/api/", data={"location": "Kathmandu"})
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), data)
+        self.assertEqual(RealTimeWeather.objects.count(), 1)
 
 
 class FetchWeatherViewTest(TestCase):
