@@ -51,6 +51,7 @@ class GetWeatherViewTest(TestCase):
     def test_view_with_no_request_body(self):
         response = self.client.post("/api/")
         self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), "Request cannot be Empty")
 
     def test_get_weather_view_with_correct_request(self):
         response = self.client.post("/api/", data={"location": "Kathmandu"})
@@ -88,21 +89,25 @@ class FetchWeatherViewTest(TestCase):
     def test_fetch_view_with_no_request_body(self):
         response = self.client.post("/api/fetch/")
         self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), "Request cannot be Empty")
 
     def test_get_weather_view_with_empty_request(self):
         response = self.client.post("/api/fetch/", data={"location": ""})
         self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.json(), "Error: Unable to get weather data")
 
-    def test_fetch__weather_view_with_correct_request(self):
+    def test_fetch_weather_view_with_correct_request(self):
         response = self.client.post("/api/fetch/", data={"location": "Kathmandu"})
         self.assertEqual(response.status_code, 200)
 
-    def test_fetch__weather_view_with_incorrect_request(self):
+    def test_fetch_weather_view_with_incorrect_request(self):
         response = self.client.post("/api/fetch/", data={"place": "Kathmandu"})
         self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), "Location was not provided")
 
-    def test_fetch__weather_twice(self):
+    def test_fetch_weather_twice(self):
         response = self.client.post("/api/fetch/", data={"location": "Kathmandu"})
         self.assertEqual(response.status_code, 200)
         response = self.client.post("/api/fetch/", data={"location": "Kathmandu"})
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(RealTimeWeather.objects.count(), 2)
